@@ -1,5 +1,6 @@
 package com.example.smartpantrymanager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements PantryAdapter.OnItemActionListener {
 
@@ -44,12 +46,9 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
         rvPantry.setLayoutManager(new LinearLayoutManager(this));
         rvPantry.setAdapter(adapter);
 
-        // TEMPORARY: adds a sample item so you can see the list working.
-        // We replace this with the real Add screen in Step 5.
-        btnAdd.setOnClickListener(v -> {
-            db.addPantryItem(new PantryItem("Tomato", 2, "pcs", null));
-            loadItems();
-        });
+        // Opens the Add/Edit screen in "add" mode (no item id passed)
+        btnAdd.setOnClickListener(v ->
+                startActivity(new Intent(this, AddEditActivity.class)));
     }
 
     // Runs every time the screen becomes visible, so the list is always up to date
@@ -61,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
 
     // Reads from SQLite and refreshes the list; shows a message if it is empty
     private void loadItems() {
-        java.util.List<PantryItem> items = db.getAllPantryItems();
+        List<PantryItem> items = db.getAllPantryItems();
         adapter.setItems(items);
         if (items.isEmpty()) {
             tvEmpty.setVisibility(View.VISIBLE);
@@ -72,10 +71,12 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
         }
     }
 
+    // Opens the Add/Edit screen in "edit" mode by passing the item's id in the Intent
     @Override
     public void onEdit(PantryItem item) {
-        // TEMPORARY: the Edit screen is built in Step 5
-        Toast.makeText(this, "Edit screen coming in Step 5", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, AddEditActivity.class);
+        intent.putExtra(AddEditActivity.EXTRA_ITEM_ID, item.getId());
+        startActivity(intent);
     }
 
     @Override
