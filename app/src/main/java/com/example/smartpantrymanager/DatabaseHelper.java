@@ -276,6 +276,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return list;
     }
 
+    // READ one recipe (with its ingredients) by id
+    public Recipe getRecipe(int recipeId) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.query(TABLE_RECIPES, null, COL_ID + "=?",
+                new String[]{String.valueOf(recipeId)}, null, null, null);
+        Recipe recipe = null;
+        if (c.moveToFirst()) {
+            recipe = new Recipe(recipeId,
+                    c.getString(c.getColumnIndexOrThrow(COL_RECIPE_NAME)),
+                    c.getString(c.getColumnIndexOrThrow(COL_RECIPE_STEPS)));
+            recipe.setIngredients(getIngredientsForRecipe(db, recipeId));
+        }
+        c.close();
+        return recipe;
+    }
+
 
     // Converts the current row of a Cursor into a PantryItem object
     private PantryItem cursorToItem(Cursor c) {

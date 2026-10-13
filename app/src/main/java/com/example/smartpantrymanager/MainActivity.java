@@ -49,6 +49,10 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
         // Opens the Add/Edit screen in "add" mode (no item id passed)
         btnAdd.setOnClickListener(v ->
                 startActivity(new Intent(this, AddEditActivity.class)));
+
+        Button btnSuggested = findViewById(R.id.btnSuggested);
+        btnSuggested.setOnClickListener(v ->
+                startActivity(new Intent(this, SuggestedRecipesActivity.class)));
     }
 
     // Runs every time the screen becomes visible, so the list is always up to date
