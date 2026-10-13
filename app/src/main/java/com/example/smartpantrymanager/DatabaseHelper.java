@@ -243,6 +243,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return count;
     }
 
+    // ---------- READ all recipes, each with its ingredient list ----------
+    public List<Recipe> getAllRecipes() {
+        List<Recipe> recipes = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.query(TABLE_RECIPES, null, null, null, null, null,
+                COL_RECIPE_NAME + " COLLATE NOCASE ASC");
+        while (c.moveToNext()) {
+            int id = c.getInt(c.getColumnIndexOrThrow(COL_ID));
+            Recipe recipe = new Recipe(id,
+                    c.getString(c.getColumnIndexOrThrow(COL_RECIPE_NAME)),
+                    c.getString(c.getColumnIndexOrThrow(COL_RECIPE_STEPS)));
+            recipe.setIngredients(getIngredientsForRecipe(db, id));
+            recipes.add(recipe);
+        }
+        c.close();
+        return recipes;
+    }
+
+    // Reads the ingredient rows that belong to one recipe (linked by recipe_id)
+    private List<RecipeIngredient> getIngredientsForRecipe(SQLiteDatabase db, int recipeId) {
+        List<RecipeIngredient> list = new ArrayList<>();
+        Cursor c = db.query(TABLE_RECIPE_ING, null, COL_RECIPE_ID + "=?",
+                new String[]{String.valueOf(recipeId)}, null, null, null);
+        while (c.moveToNext()) {
+            list.add(new RecipeIngredient(
+                    c.getString(c.getColumnIndexOrThrow(COL_ING_NAME)),
+                    c.getDouble(c.getColumnIndexOrThrow(COL_ING_QTY)),
+                    c.getString(c.getColumnIndexOrThrow(COL_ING_UNIT))));
+        }
+        c.close();
+        return list;
+    }
+
 
     // Converts the current row of a Cursor into a PantryItem object
     private PantryItem cursorToItem(Cursor c) {
