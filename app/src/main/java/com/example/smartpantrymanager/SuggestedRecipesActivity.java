@@ -36,6 +36,7 @@ public class SuggestedRecipesActivity extends AppCompatActivity
         rvRecipes.setAdapter(adapter);
 
         btnBack.setOnClickListener(v -> finish());
+        BottomNavHelper.setup(this, R.id.nav_suggested);
     }
 
     // Re-runs the matching every time the screen is shown
